@@ -1,0 +1,24 @@
+app_name: "IG_Automation_Bot"
+
+# Instagram credentials
+account:
+  username: "YOUR_IG_USERNAME"
+  password: "YOUR_IG_PASSWORD"
+
+# User acquisition settings
+users_src:
+  src_account: "IG_USERNAME_WHERE_FETCH_FOLLOWERS"
+  fetch_quantity: 500
+
+# Bot configuration
+bot:
+  auto_follow: true
+  auto_dm: true
+  max_dm_quantity: 30 # Per day
+  max_follow_quantity: 100 # Per day
+  blacklist_interacted_users: true
+  headless_browser: false
+
+# Templates
+dm_templates:
+  - message: "Hey ! What's up?"
