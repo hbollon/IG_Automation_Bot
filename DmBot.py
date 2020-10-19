@@ -42,7 +42,7 @@ class Blacklist(object):
         f.close()
 
     def addUser(self, u):
-        with open("data/blacklist.csv", 'a+') as f:
+        with open("data/blacklist.csv", 'a', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=["Username"])
             writer.writerow({'Username': u})
             self.users.append(u)
