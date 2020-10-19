@@ -31,9 +31,10 @@ class Blacklist(object):
         self.users = []
         if not os.path.exists('data/blacklist.csv'):
             os.mknod('data/blacklist.csv')
-            with open("data/blacklist.csv", 'a+') as f:
+            with open("data/blacklist.csv", 'w') as f:
                 writer = csv.DictWriter(f, fieldnames=["Username"])
                 writer.writeheader()
+            f.close()
 
         with open("data/blacklist.csv", 'r') as f:
             reader = csv.DictReader(f)
@@ -45,7 +46,7 @@ class Blacklist(object):
         with open("data/blacklist.csv", 'a', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=["Username"])
             writer.writerow({'Username': u})
-            self.users.append(u)
+            self.users.append({'Username': u})
         f.close()
 
     def isBlacklisted(self, u):
