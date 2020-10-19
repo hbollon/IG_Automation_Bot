@@ -21,4 +21,4 @@ bot:
 
 # Templates
 dm_templates:
-  - message: "Hey ! What's up?"
+  - "Hey ! What's up?"
