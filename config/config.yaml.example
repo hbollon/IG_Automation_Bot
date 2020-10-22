@@ -18,6 +18,16 @@ bot:
   max_follow_quantity: 100 # Per day
   blacklist_interacted_users: true
   headless_browser: false
+  quotas: 
+    dm_per_day: 50
+    dm_per_hour: 5
+    follow_per_day: 100
+    follow_per_hour: 10
+    activated: true
+  schedule: # 24h format
+    begin_at: 8
+    end_at: 18
+    activated: true
 
 # Templates
 dm_templates:

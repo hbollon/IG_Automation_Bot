@@ -4,6 +4,7 @@ import os
 import confuse
 import random
 import csv
+import time
 
 class ConfuseConfig(confuse.Configuration):
     def config_dir(self):
@@ -25,6 +26,8 @@ class Config(object):
         self.blacklistInteractedUsers = self.config["bot"]["blacklist_interacted_users"].get(bool)
         self.headlessBrowser = self.config["bot"]["headless_browser"].get(bool)
         self.dmTemplates = self.config["dm_templates"].get(list)
+
+        self.quotas = Quotas(self.config)
         
 class Blacklist(object):
     def __init__(self):
@@ -54,6 +57,44 @@ class Blacklist(object):
             if(user['Username'] == u):
                 return True
         return False
+
+class Quotas(object):
+    def __init__(self, config):
+        self.enabled = config["bot"]["quotas"]["activated"].get(bool)
+        if self.enabled:
+            self.dayTime = time.time()
+            self.totalDmSentDay = 0
+            self.totalFollowDay = 0
+            self.dmPerDay = config["bot"]["quotas"]["dm_per_day"].get(int)
+            self.dmPerHour = config["bot"]["quotas"]["dm_per_hour"].get(int)
+            self.followPerDay = config["bot"]["quotas"]["follow_per_day"].get(int)
+            self.followPerHour = config["bot"]["quotas"]["follow_per_hour"].get(int)
+            self.initTimeQuota()
+
+    def initTimeQuota(self):
+        self.timeQuota = time.time()
+        self.dmSent = 0
+        self.followDone = 0
+
+    def checkQuota(self):
+        if self.dmSent >= self.dmPerHour or self.followDone >= self.followPerHour:
+            if (time.time() - self.timeQuota) < 3600:
+                print("Quota reached, sleeping 120 sec...")
+                sleep(120)
+                self.checkQuota()
+            else:
+                print("Reset hourly quotas!")
+                self.initTimeQuota()
+
+    def addDm(self):
+        self.dmSent += 1
+        self.totalDmSentDay += 1
+        self.checkQuota()
+
+    def addFollow(self):
+        self.followDone += 1
+        self.totalFollowDay += 1
+        self.checkQuota()
 
 def extractUsers():
     csv_file = 'IGExport_plba_food.csv'
@@ -85,6 +126,7 @@ if __name__ == '__main__':
                 insta.sendMessage(user=user, message=config.dmTemplates[0])
                 print("Dm sent to "+user)
                 usersBlacklist.addUser(user)
+                config.quotas.addDm()
                 sleep(random.randint(45, 60))
 
         
