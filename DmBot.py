@@ -126,7 +126,8 @@ if __name__ == '__main__':
                 insta.sendMessage(user=user, message=config.dmTemplates[0])
                 print("Dm sent to "+user)
                 usersBlacklist.addUser(user)
-                config.quotas.addDm()
+                if config.quotas.enabled:
+                    config.quotas.addDm()
                 sleep(random.randint(45, 60))
 
         
