@@ -76,14 +76,28 @@ class Quotas(object):
         self.dmSent = 0
         self.followDone = 0
 
+    def resetDaily(self):
+        self.dayTime = time.time()
+        self.totalDmSentDay = 0
+        self.totalFollowDay = 0
+
     def checkQuota(self):
         if self.dmSent >= self.dmPerHour or self.followDone >= self.followPerHour:
             if (time.time() - self.timeQuota) < 3600:
-                print("Quota reached, sleeping 120 sec...")
+                print("Hourly quota reached, sleeping 120 sec...")
                 sleep(120)
                 self.checkQuota()
             else:
                 print("Reset hourly quotas!")
+                self.resetDaily()
+
+        if self.totalDmSentDay >= self.dmPerDay or self.totalFollowDay >= self.followPerDay:
+            if (time.time() - self.dayTime) < 86400:
+                print("Daily quota reached, sleeping for one hour...")
+                sleep(3600)
+                self.checkQuota()
+            else:
+                print("Reset daily quotas!")
                 self.initTimeQuota()
 
     def addDm(self):
