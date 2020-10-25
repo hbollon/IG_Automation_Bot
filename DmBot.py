@@ -137,11 +137,16 @@ if __name__ == '__main__':
     if(config.autoDm == True):
         for user in followers:
             if usersBlacklist.isBlacklisted(user) == False:
-                insta.sendMessage(user=user, message=config.dmTemplates[0])
-                print("Dm sent to "+user)
-                usersBlacklist.addUser(user)
-                if config.quotas.enabled:
-                    config.quotas.addDm()
-                sleep(random.randint(45, 60))
+                messageSend = insta.sendMessage(user=user, message=config.dmTemplates[0])
+                if messageSend:
+                    print("Dm sent to "+user)
+                    usersBlacklist.addUser(user)
+                    if config.quotas.enabled:
+                        config.quotas.addDm()
+                    sleep(random.randint(30, 45))
+                else:
+                    print("Error durring message sending to "+user+". User blacklisted.")
+                    usersBlacklist.addUser(user)
+
 
         
