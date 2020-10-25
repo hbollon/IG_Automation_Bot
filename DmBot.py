@@ -89,7 +89,7 @@ class Quotas(object):
                 self.checkQuota()
             else:
                 print("Reset hourly quotas!")
-                self.resetDaily()
+                self.initTimeQuota()
 
         if self.totalDmSentDay >= self.dmPerDay or self.totalFollowDay >= self.followPerDay:
             if (time.time() - self.dayTime) < 86400:
@@ -98,7 +98,7 @@ class Quotas(object):
                 self.checkQuota()
             else:
                 print("Reset daily quotas!")
-                self.initTimeQuota()
+                self.resetDaily()
 
     def addDm(self):
         self.dmSent += 1
@@ -110,7 +110,7 @@ class Quotas(object):
         self.totalFollowDay += 1
         self.checkQuota()
 
-def extractUsers():
+def extractUsersFromCsv():
     csv_file = 'IGExport_plba_food.csv'
     usernames = []
 
@@ -120,6 +120,9 @@ def extractUsers():
             usernames.append(row.get('Username'))
     return usernames
 
+# def fetchUsersFromIG(srcUsername):
+    
+
 
 if __name__ == '__main__':
     # Get config from config.yml
@@ -127,7 +130,7 @@ if __name__ == '__main__':
     usersBlacklist = Blacklist()
 
     # Recover follower list from srcUser account
-    followers = extractUsers()
+    followers = extractUsersFromCsv()
 
     # Auto login
     insta = InstaDM(username=config.username,
