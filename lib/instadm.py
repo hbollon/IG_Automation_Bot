@@ -106,9 +106,59 @@ class InstaDM(object):
 
             # Select user
             elements = self.driver.find_elements_by_xpath(self.selectors['select_user'])
+            # If user exist and is valid for dm sending
             if elements and len(elements) > 0:
                 elements[0].click()
                 self.__random_sleep__()
+
+                # Go to page
+                if self.__wait_for_element__(self.selectors['next_button'], "xpath"):
+                    self.__get_element__(self.selectors['next_button'], "xpath").click()
+                    self.__random_sleep__()
+
+                if self.__wait_for_element__(self.selectors['textarea'], "xpath"):
+                    self.__type_slow__(self.selectors['textarea'], "xpath", message)
+                    self.__random_sleep__()
+
+                if self.__wait_for_element__(self.selectors['send'], "xpath"):
+                    self.__get_element__(self.selectors['send'], "xpath").click()
+
+                if self.conn is not None:
+                    self.cursor.execute('INSERT INTO message (username, message) VALUES(?, ?)', (user, message))
+                    self.conn.commit()
+                self.__random_sleep__(50, 60)
+
+                return True
+
+            # In case user has changed his username or has a private account
+            else:
+                return False
+            
+        except Exception as e:
+            logging.error(e)
+            return False
+
+
+    def sendGroupMessage(self, users, message):
+        logging.info(f'Send group message {message} to {users}')
+        self.driver.get('https://www.instagram.com/direct/new/?hl=en')
+        self.__random_sleep__(5, 7)
+
+        try: 
+            usersAndMessages = []
+            for user in users:
+                if self.conn is not None:
+                    usersAndMessages.append((user, message))
+
+                self.__wait_for_element__(self.selectors['search_user'], "name")
+                self.__type_slow__(self.selectors['search_user'], "name", user)
+                self.__random_sleep__()
+
+                # Select user
+                elements = self.driver.find_elements_by_xpath(self.selectors['select_user'])
+                if elements and len(elements) > 0:
+                    elements[0].click()
+                    self.__random_sleep__()
 
             # Go to page
             if self.__wait_for_element__(self.selectors['next_button'], "xpath"):
@@ -123,56 +173,17 @@ class InstaDM(object):
                 self.__get_element__(self.selectors['send'], "xpath").click()
 
             if self.conn is not None:
-                self.cursor.execute('INSERT INTO message (username, message) VALUES(?, ?)', (user, message))
+                self.cursor.executemany("""
+                    INSERT OR IGNORE INTO message (username, message) VALUES(?, ?)
+                """, usersAndMessages)
                 self.conn.commit()
-            self.__random_sleep__(50, 60)
 
+            self.__random_sleep__()
             return True
-            
+        
         except Exception as e:
             logging.error(e)
             return False
-
-
-    def sendGroupMessage(self, users, message):
-        logging.info(f'Send group message {message} to {users}')
-        self.driver.get('https://www.instagram.com/direct/new/?hl=en')
-        self.__random_sleep__(5, 7)
-
-        usersAndMessages = []
-        for user in users:
-            if self.conn is not None:
-                usersAndMessages.append((user, message))
-
-            self.__wait_for_element__(self.selectors['search_user'], "name")
-            self.__type_slow__(self.selectors['search_user'], "name", user)
-            self.__random_sleep__()
-
-            # Select user
-            elements = self.driver.find_elements_by_xpath(self.selectors['select_user'])
-            if elements and len(elements) > 0:
-                elements[0].click()
-                self.__random_sleep__()
-
-        # Go to page
-        if self.__wait_for_element__(self.selectors['next_button'], "xpath"):
-            self.__get_element__(self.selectors['next_button'], "xpath").click()
-            self.__random_sleep__()
-
-        if self.__wait_for_element__(self.selectors['textarea'], "xpath"):
-            self.__type_slow__(self.selectors['textarea'], "xpath", message)
-            self.__random_sleep__()
-
-        if self.__wait_for_element__(self.selectors['send'], "xpath"):
-            self.__get_element__(self.selectors['send'], "xpath").click()
-
-        if self.conn is not None:
-            self.cursor.executemany("""
-                INSERT OR IGNORE INTO message (username, message) VALUES(?, ?)
-            """, usersAndMessages)
-            self.conn.commit()
-
-        self.__random_sleep__()
 
     def __get_element__(self, element_tag, locator):
         """Wait for element and then return when it is available"""
