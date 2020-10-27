@@ -121,7 +121,17 @@ def extractUsersFromCsv():
             usernames.append(row.get('Username'))
     return usernames
 
-def fetchUsersFromIG(login, password, srcUsernames, quantity=None):
+def __is_followers_list_valid__(blacklist, users):
+    blacklistedUsers = 0
+    for user in users:
+        if blacklist.isBlacklisted(user):
+            blacklistedUsers += 1
+    blacklistedUsers = blacklistedUsers / len(users)
+    print(f"Percentage: {blacklistedUsers}")
+    if blacklistedUsers > 0.05: return False
+    return True
+
+def fetchUsersFromIG(login, password, srcUsernames, blacklist, quantity=None):
     print("Fetching users to dm...")
     users = []
     igl = instaloader.Instaloader()
@@ -129,14 +139,16 @@ def fetchUsersFromIG(login, password, srcUsernames, quantity=None):
     for user in srcUsernames:
         print(f"=> Fetching from '{user}' account...")
         profile = instaloader.Profile.from_username(igl.context, user)
-        index = 0
         for follower in profile.get_followers():
             #print(follower)
             users.append(follower.username)
             if quantity != None:
-                index += 1
-                if(index == quantity):
-                    break
+                if len(users) == quantity:
+                    if __is_followers_list_valid__(blacklist, users):
+                        break
+                    else:
+                        print("/!\ : Too much blacklisted users in fetched ones! Continue...")
+                        users.clear()
 
     print("Writing fetched data to csv...")
     if not os.path.exists('data/users.csv'):
@@ -156,8 +168,8 @@ if __name__ == '__main__':
     config = Config()
     usersBlacklist = Blacklist()
 
-    # Recover follower list from srcUser account
-    fetchUsersFromIG(config.username, config.password, config.srcAccounts, config.fetchQuantity)
+    # Recover followers list from source accounts
+    fetchUsersFromIG(config.username, config.password, config.srcAccounts, usersBlacklist, config.fetchQuantity)
     followers = extractUsersFromCsv()
 
     # Auto login
@@ -178,6 +190,7 @@ if __name__ == '__main__':
                 else:
                     print("Error durring message sending to "+user+". User blacklisted.")
                     usersBlacklist.addUser(user)
+        
 
 
         
