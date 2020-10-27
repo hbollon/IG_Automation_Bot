@@ -109,7 +109,7 @@ class InstaDM(object):
         if self.__wait_for_element__(self.selectors['name'], "xpath", 10):
             user_name = self.__get_element__(self.selectors['name'], "xpath").text
             if user_name:
-                greeting = greeting + " " + user_name + ", \n\n"
+                greeting = greeting + " " + user_name + ", \n"
         else: 
             greeting = greeting + ", \n"
         return greeting

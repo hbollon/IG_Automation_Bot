@@ -5,6 +5,7 @@ import confuse
 import random
 import csv
 import time
+import instaloader
 
 class ConfuseConfig(confuse.Configuration):
     def config_dir(self):
@@ -17,7 +18,7 @@ class Config(object):
         self.app_name = self.config['app_name'].get(str)
         self.username = self.config["account"]["username"].get(str)
         self.password = self.config["account"]["password"].get(str)
-        self.srcAccount = self.config["users_src"]["src_account"].get(str)
+        self.srcAccounts = self.config["users_src"]["src_accounts"].get(list)
         self.fetchQuantity = self.config["users_src"]["fetch_quantity"].get(int)
         self.autoFollow = self.config["bot"]["auto_follow"].get(bool)
         self.autoDm = self.config["bot"]["auto_dm"].get(bool)
@@ -111,7 +112,7 @@ class Quotas(object):
         self.checkQuota()
 
 def extractUsersFromCsv():
-    csv_file = 'IGExport_plba_food.csv'
+    csv_file = 'data/users.csv'
     usernames = []
 
     with open(csv_file, 'r') as f:
@@ -120,9 +121,35 @@ def extractUsersFromCsv():
             usernames.append(row.get('Username'))
     return usernames
 
-# def fetchUsersFromIG(srcUsername):
-    
+def fetchUsersFromIG(login, password, srcUsernames, quantity=None):
+    print("Fetching users to dm...")
+    users = []
+    igl = instaloader.Instaloader()
+    igl.login(login, password)
+    for user in srcUsernames:
+        print(f"=> Fetching from '{user}' account...")
+        profile = instaloader.Profile.from_username(igl.context, user)
+        index = 0
+        for follower in profile.get_followers():
+            #print(follower)
+            users.append(follower.username)
+            if quantity != None:
+                index += 1
+                if(index == quantity):
+                    break
 
+    print("Writing fetched data to csv...")
+    if not os.path.exists('data/users.csv'):
+        os.mknod('data/users.csv')
+    with open("data/users.csv", 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=["Username"])
+        writer.writeheader()
+        for user in users:
+            #print(user)
+            writer.writerow({'Username': user})
+    f.close()
+
+    print("Users fetching successfully completed!")
 
 if __name__ == '__main__':
     # Get config from config.yml
@@ -130,6 +157,7 @@ if __name__ == '__main__':
     usersBlacklist = Blacklist()
 
     # Recover follower list from srcUser account
+    fetchUsersFromIG(config.username, config.password, config.srcAccounts, config.fetchQuantity)
     followers = extractUsersFromCsv()
 
     # Auto login

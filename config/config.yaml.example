@@ -7,7 +7,8 @@ account:
 
 # User acquisition settings
 users_src:
-  src_account: "IG_USERNAME_WHERE_FETCH_FOLLOWERS"
+  src_account: # List of account where you want to fetch followers 
+    - "IG_USERNAME_WHERE_FETCH_FOLLOWERS"
   fetch_quantity: 500
 
 # Bot configuration
