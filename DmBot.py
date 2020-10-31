@@ -1,5 +1,6 @@
 from lib.instadm import InstaDM
 from time import sleep
+from tqdm import tqdm
 import os
 import confuse
 import random
@@ -127,11 +128,11 @@ def __is_followers_list_valid__(blacklist, users):
         if blacklist.isBlacklisted(user):
             blacklistedUsers += 1
     blacklistedUsers = blacklistedUsers / len(users)
-    print(f"Percentage: {blacklistedUsers}")
+    print(f"Blacklisted percentage: {blacklistedUsers*100}%")
     if blacklistedUsers > 0.05: return False
     return True
 
-def fetchUsersFromIG(login, password, srcUsernames, blacklist, quantity=None):
+def fetchUsersFromIG(login, password, srcUsernames, blacklist, quantity=1000):
     print("Fetching users to dm...")
     users = []
     igl = instaloader.Instaloader()
@@ -139,16 +140,18 @@ def fetchUsersFromIG(login, password, srcUsernames, blacklist, quantity=None):
     for user in srcUsernames:
         print(f"=> Fetching from '{user}' account...")
         profile = instaloader.Profile.from_username(igl.context, user)
-        for follower in profile.get_followers():
-            #print(follower)
-            users.append(follower.username)
-            if quantity != None:
+        with tqdm(total=quantity) as pbar:
+            for follower in profile.get_followers():
+                #print(follower)
+                users.append(follower.username)
+                pbar.update(1)
                 if len(users) == quantity:
                     if __is_followers_list_valid__(blacklist, users):
                         break
                     else:
                         print("/!\ : Too much blacklisted users in fetched ones! Continue...")
                         users.clear()
+                        pbar.reset()
 
     print("Writing fetched data to csv...")
     if not os.path.exists('data/users.csv'):
