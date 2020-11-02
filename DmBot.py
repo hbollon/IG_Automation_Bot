@@ -183,7 +183,7 @@ if __name__ == '__main__':
     if(config.autoDm == True):
         for user in followers:
             if usersBlacklist.isBlacklisted(user) == False:
-                messageSend = insta.sendMessage(user=user, message=config.dmTemplates[0], greeting="Salut")
+                messageSend = insta.sendMessage(user=user, message=random.choice(config.dmTemplates) , greeting="Salut")
                 if messageSend:
                     print("Dm sent to "+user)
                     usersBlacklist.addUser(user)
