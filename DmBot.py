@@ -28,6 +28,8 @@ class Config(object):
         self.blacklistInteractedUsers = self.config["bot"]["blacklist_interacted_users"].get(bool)
         self.headlessBrowser = self.config["bot"]["headless_browser"].get(bool)
         self.dmTemplates = self.config["dm_templates"].get(list)
+        self.greetingTemplate = self.config["greeting"]["template"].get(str)
+        self.greetingEnabled = self.config["greeting"]["activated"].get(bool)
 
         self.quotas = Quotas(self.config)
         
@@ -183,7 +185,10 @@ if __name__ == '__main__':
     if(config.autoDm == True):
         for user in followers:
             if usersBlacklist.isBlacklisted(user) == False:
-                messageSend = insta.sendMessage(user=user, message=random.choice(config.dmTemplates) , greeting="Salut")
+                messageSend = insta.sendMessage(
+                    user=user, 
+                    message=random.choice(config.dmTemplates), 
+                    greeting=config.greetingTemplate if config.greetingEnabled else None)
                 if messageSend:
                     print("Dm sent to "+user)
                     usersBlacklist.addUser(user)

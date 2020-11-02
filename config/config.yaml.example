@@ -33,3 +33,6 @@ bot:
 # Templates
 dm_templates:
   - "Hey ! What's up?"
+greeting:
+  template: "Hello"
+  activated: false

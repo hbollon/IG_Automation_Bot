@@ -5,7 +5,7 @@
     <img alt="made-with-python" src="https://img.shields.io/badge/Made%20with-Python-1f425f.svg" />
   </a>
   <a href="https://github.com/hbollon/IG_Automation_Bot/releases/" target="_blank">
-    <img alt="GitHub release" src="https://img.shields.io/github/release/hbollon/IG_Automation_Bot.svg" />
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/hbollon/IG_Automation_Bot?include_prereleases" />
   </a>
   <a href="https://github.com/hbollon/IG_Automation_Bot/blob/master/LICENSE.md" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
@@ -45,6 +45,8 @@
 - Autonomous user recovery from Instagram ✨
 - Blacklist for unique interactions ✨
 - Interaction quotas (hourly / daily) ✨
+- Custom greeting with user name ✨
+- Human typing simulation and random delay between interactions ✨
 - Completely customizable ! ✨
 
 **Check this [Project](https://github.com/hbollon/IG_Automation_Bot/projects/1) to see all planned features for this tool! Feel free to suggest additional features to implement! 🥳**
@@ -92,3 +94,5 @@ Give a ⭐️ if this project helped you!
 ## 📝 License
 
 This project is under [MIT](https://github.com/hbollon/IG_Automation_Bot/blob/master/LICENSE.md) license.
+
+**Thanks to [CamTosh](https://github.com/CamTosh) for his [DM sending engine](https://github.com/CamTosh/instagram-bot-dm) used by this project and which I have also been able to contribute!**
