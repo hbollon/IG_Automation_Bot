@@ -12,9 +12,7 @@
   </a>
 </p>
 
-<p align="center"><strong>This project is under active development! Use it at you own risks.</strong></p>
-
-<p align="center">(WIP) Python bot for Instagram automation using InstaPy and InstaDM APIs. Used for auto following and DM. Easily configurable through Yaml config files!</p>
+<p align="center">Python tool for Instagram direct message automation with scheduler, quota management, user blacklist & autonomous user scrapping. Easily configurable through Yaml config files!</p>
 
 ---
 
@@ -45,6 +43,7 @@
 - Autonomous user recovery from Instagram ✨
 - Blacklist for unique interactions ✨
 - Interaction quotas (hourly / daily) ✨
+- Scheduler to configure the bot's operating hours! ✨
 - Custom greeting with user name ✨
 - Human typing simulation and random delay between interactions ✨
 - Completely customizable ! ✨
@@ -80,7 +79,7 @@ python DmBot.py
 👤 **Hugo Bollon**
 
 * Github: [@hbollon](https://github.com/hbollon)
-* LinkedIn: [@Hugo Bollon](https://www.linkedin.com/in/hugo-bollon-68a2381a4/)
+* LinkedIn: [@Hugo Bollon](https://www.linkedin.com/in/hugobollon/)
 * Portfolio: [hugobollon.me](https://www.hugobollon.me)
 
 ## 🤝 Contributing

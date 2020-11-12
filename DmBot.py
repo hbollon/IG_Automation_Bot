@@ -6,6 +6,7 @@ import confuse
 import random
 import csv
 import time
+import datetime
 import instaloader
 
 class ConfuseConfig(confuse.Configuration):
@@ -32,6 +33,7 @@ class Config(object):
         self.greetingEnabled = self.config["greeting"]["activated"].get(bool)
 
         self.quotas = Quotas(self.config)
+        self.scheduler = Scheduler(self.config)
         
 class Blacklist(object):
     def __init__(self):
@@ -114,6 +116,29 @@ class Quotas(object):
         self.totalFollowDay += 1
         self.checkQuota()
 
+class Scheduler(object):
+    def __init__(self, config):
+        self.enabled = config["bot"]["schedule"]["activated"].get(bool)
+        if self.enabled:
+            self.dayTime = time.time()
+            self.begin = datetime.time(config["bot"]["schedule"]["begin_at"].get(int), 0, 0)
+            self.end = datetime.time(config["bot"]["schedule"]["end_at"].get(int), 0, 0)
+    
+    def isWorkingTime(self, t):
+        if self.begin <= self.end:
+            return self.begin <= t <= self.end
+        else:
+            return self.begin <= t or t <= self.end
+
+    def checkTime(self):
+        if(self.isWorkingTime(datetime.datetime.now().time())):
+            return True
+        else:
+            print("Reached end of service. Sleeping for one hour...")
+            sleep(3600)
+            self.checkTime()
+
+
 def extractUsersFromCsv():
     csv_file = 'data/users.csv'
     usernames = []
@@ -182,22 +207,23 @@ if __name__ == '__main__':
                     password=config.password, headless=config.headlessBrowser)
 
     # Send message
-    if(config.autoDm == True):
+    if(config.autoDm):
         for user in followers:
-            if usersBlacklist.isBlacklisted(user) == False:
-                messageSend = insta.sendMessage(
-                    user=user, 
-                    message=random.choice(config.dmTemplates), 
-                    greeting=config.greetingTemplate if config.greetingEnabled else None)
-                if messageSend:
-                    print("Dm sent to "+user)
-                    usersBlacklist.addUser(user)
-                    if config.quotas.enabled:
-                        config.quotas.addDm()
-                    sleep(random.randint(30, 45))
-                else:
-                    print("Error durring message sending to "+user+". User blacklisted.")
-                    usersBlacklist.addUser(user)
+            if(config.scheduler.checkTime() if config.scheduler.enabled else True):
+                if usersBlacklist.isBlacklisted(user) == False:
+                    messageSend = insta.sendMessage(
+                        user=user, 
+                        message=random.choice(config.dmTemplates), 
+                        greeting=config.greetingTemplate if config.greetingEnabled else None)
+                    if messageSend:
+                        print("Dm sent to "+user)
+                        usersBlacklist.addUser(user)
+                        if config.quotas.enabled:
+                            config.quotas.addDm()
+                        sleep(random.randint(30, 45))
+                    else:
+                        print("Error durring message sending to "+user+". User blacklisted.")
+                        usersBlacklist.addUser(user)
         
 
 
