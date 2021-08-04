@@ -14,6 +14,8 @@
 
 <p align="center">Python tool for Instagram direct message automation with scheduler, quota management, user blacklist & autonomous user scrapping. Easily configurable through Yaml config files!</p>
 
+<p align="center"><strong>⚠️ Not maintained anymore in favor of its successor <a href="https://github.com/hbollon/IGopher">IGopher</a> ⚠️</strong></p>
+
 ---
 
 > Disclaimer: This is a research project. I am in no way responsible for the use you made of this tool. In addition, I am not responsible for any sanctions and/or limitations imposed on your account after using this bot.
